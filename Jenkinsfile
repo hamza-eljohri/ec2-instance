@@ -50,6 +50,8 @@ pipeline {
                             dynamodb_table = "${REMOTE_STATE}"
                             region         = "${AWS_REGION}"
                             key            = "${TF_VAR_project_name}"
+                            access_key = "${ACCESS_KEY}"
+                            secret_key = "${SECRET_KEY}"
                         }
                     }
                     """
