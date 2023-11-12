@@ -45,7 +45,12 @@ pipeline {
                                 version = ">= 4.67.0"
                             }
                         }
-                        
+                        backend "s3" {
+                            bucket         = "${REMOTE_STATE}"
+                            dynamodb_table = "${REMOTE_STATE}"
+                            region         = "${AWS_REGION}"
+                            key            = "${TF_VAR_project_name}"
+                        }
                     }
                     """
                     }
