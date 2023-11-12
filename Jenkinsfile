@@ -80,6 +80,15 @@ pipeline {
             }
         }
 
+        stage('Manual Approval') {
+            steps {
+                script {
+                    // Request manual approval
+                    input "Do you approve the Terraform changes? (Click 'Proceed' to approve)"
+                }
+            }
+        }
+        
         stage('Terraform Apply') {
             steps {
                 script {
