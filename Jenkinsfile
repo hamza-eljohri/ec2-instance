@@ -1,5 +1,4 @@
 // WIP ...
-
 pipeline {
     agent any
 
@@ -9,13 +8,14 @@ pipeline {
         TF_VAR_remote_state = credentials('remote_state')
         TF_VAR_AWS_REGION = credentials('aws_region')
         TF_VAR_branch_name = "${BRANCH_NAME}"
-        TF_VAR_project_name = env.GIT_URL.replace('.git', '').split('/').last()
+        TF_VAR_project_name = env.GIT_URL.replace('.git', '').split('/').last()                              
     }
 
     stages {
         stage('Checkout') {
             steps {
                 script {
+                    
                     checkout scm
                 }
             }
@@ -30,30 +30,24 @@ pipeline {
                         string(credentialsId: 'remote_state', variable: 'REMOTE_STATE'),
                         string(credentialsId: 'aws_region', variable: 'AWS_REGION')
                     ]) {
-                        // Create backend.tf dynamically using echo and variable substitution with sh
-                        sh """
-                        echo 'provider "aws" {' > backend.tf
-                        echo '  region     = "${AWS_REGION}"' >> backend.tf
-                        echo '  access_key = "${ACCESS_KEY}"' >> backend.tf
-                        echo '  secret_key = "${SECRET_KEY}"' >> backend.tf
-                        echo '}' >> backend.tf
-                        echo '' >> backend.tf
-                        echo 'terraform {' >> backend.tf
-                        echo '  required_version = ">= 0.13.5"' >> backend.tf
-                        echo '  required_providers {' >> backend.tf
-                        echo '    aws = {' >> backend.tf
-                        echo '      source  = "hashicorp/aws"' >> backend.tf
-                        echo '      version = ">= 4.67.0"' >> backend.tf
-                        echo '    }' >> backend.tf
-                        echo '  }' >> backend.tf
-                        echo '  backend "s3" {' >> backend.tf
-                        echo '    bucket         = "${REMOTE_STATE}"' >> backend.tf
-                        echo '    dynamodb_table = "${REMOTE_STATE}"' >> backend.tf
-                        echo '    region         = "${AWS_REGION}"' >> backend.tf
-                        echo '    key            = "${TF_VAR_project_name}"' >> backend.tf
-                        echo '  }' >> backend.tf
-                        echo '}' >> backend.tf
-                        """
+                    writeFile file: 'backend.tf', text: """
+                    provider "aws" {
+                        region = "${AWS_REGION}"
+                        access_key = "${ACCESS_KEY}"
+                        secret_key = "${SECRET_KEY}"
+                    }
+
+                    terraform {
+                        required_version = ">= 0.13.5"
+                        required_providers {
+                            aws = {
+                                source  = "hashicorp/aws"
+                                version = ">= 4.67.0"
+                            }
+                        }
+                        
+                    }
+                    """
                     }
                     sh 'cat backend.tf'
                     sh 'terraform init'
@@ -64,6 +58,7 @@ pipeline {
         stage('Terraform Init') {
             steps {
                 script {
+                    
                     sh 'terraform init'
                     sh 'terraform workspace select ${TF_VAR_branch_name} || terraform workspace new ${TF_VAR_branch_name}'
                 }
@@ -73,6 +68,7 @@ pipeline {
         stage('Terraform Plan') {
             steps {
                 script {
+                   
                     sh 'terraform plan -out=tfplan'
                 }
             }
@@ -81,6 +77,7 @@ pipeline {
         stage('Terraform Apply') {
             steps {
                 script {
+                    
                     sh 'terraform apply -auto-approve tfplan'
                 }
             }
