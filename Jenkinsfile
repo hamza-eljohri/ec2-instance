@@ -8,7 +8,7 @@ pipeline {
         TF_VAR_remote_state = credentials('remote_state')
         TF_VAR_aws_region = credentials('aws_region')
         TF_VAR_branch_name = "${BRANCH_NAME}"
-        TF_VAR_project_name = "${JOB_NAME}"
+        TF_VAR_project_name = sh(script: 'echo ${CHANGE_URL} | awk -F/ \'{print $4}\'', returnStdout: true).trim()
     }
 
     stages {
