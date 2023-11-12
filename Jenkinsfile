@@ -28,7 +28,7 @@ pipeline {
                     sh '''
                       cat > backend.tf <<EOF
                     provider "aws" {
-                        region = var.aws_region
+                        region = "${aws_region}"
                     }
                     terraform {
                         required_version = ">= 0.13.5"
@@ -39,9 +39,9 @@ pipeline {
                             }
                         }
                         backend "s3" {
-                            bucket         = var.remote_state
-                            dynamodb_table = var.remote_state
-                            region         = var.aws_region
+                            bucket         = "${remote_state}"
+                            dynamodb_table = "${remote_state}"
+                            region         = "${aws_region}"
                             key            = "${TF_VAR_project_name}"
                         }
                     }                    
