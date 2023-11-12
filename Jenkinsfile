@@ -26,7 +26,7 @@ pipeline {
                 script {
                     
                     sh '''
-                    cat > backend.tf <<EOF
+                      cat > backend.tf <<EOF
                     provider "aws" {
                         region = "$TF_VAR_aws_region"
                     }
@@ -39,14 +39,15 @@ pipeline {
                             }
                         }
                         backend "s3" {
-                        bucket         = "$TF_VAR_remote_state"
-                        dynamodb_table = "$TF_VAR_remote_state"
-                        region         = "$TF_VAR_aws_region"
-                        key            = "$TF_VAR_project_name"
+                            bucket         = "$TF_VAR_remote_state"
+                            dynamodb_table = "$TF_VAR_remote_state"
+                            region         = "$TF_VAR_aws_region"
+                            key            = "$TF_VAR_project_name"
                         }
                     }
                     EOF
                     '''
+                    sh 'cat backend.tf'
                 }
             }
         }
