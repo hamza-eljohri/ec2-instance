@@ -1,0 +1,8 @@
+instance_1:
+  system :
+    instance_type : t2.micro
+    keypair_name  : instance1_keypair
+  network:
+    vpc_name : base-infra-vpc
+    subnet_name : infra-subnet-public1
+    security_group  : instance1-sg
