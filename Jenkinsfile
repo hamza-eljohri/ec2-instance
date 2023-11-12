@@ -26,9 +26,26 @@ pipeline {
                 script {
                     
                     sh '''
-                    terraform init
-                    echo $TF_VAR_branch_name
-                    echo $TF_VAR_project_name
+                    cat > backend.tf <<EOF
+                    provider "aws" {
+                        region = "$TF_VAR_aws_region"
+                    }
+                    terraform {
+                        required_version = ">= 0.13.5"
+                        required_providers {
+                            aws = {
+                                source  = "hashicorp/aws"
+                                version = ">= 4.67.0"
+                            }
+                        }
+                        backend "s3" {
+                        bucket         = "$TF_VAR_remote_state"
+                        dynamodb_table = "$TF_VAR_remote_state"
+                        region         = "$TF_VAR_aws_region"
+                        key            = "$TF_VAR_project_name"
+                        }
+                    }
+                    EOF
                     '''
                 }
             }
@@ -39,6 +56,7 @@ pipeline {
                 script {
                     
                     sh 'terraform init'
+                    sh 'terraform workspace select ${TF_VAR_branch_name} || terraform workspace new ${TF_VAR_branch_name}'
                 }
             }
         }
