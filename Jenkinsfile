@@ -24,12 +24,17 @@ pipeline {
         stage('Terraform backend') {
             steps {
                 script {
-                    
+                    withCredentials([
+                        string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'ACCESS_KEY'),
+                        string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'SECRET_KEY'),
+                        string(credentialsId: 'remote_state', variable: 'REMOTE_STATE'),
+                        string(credentialsId: 'aws_region', variable: 'AWS_REGION')
+                    ]) {
                     writeFile file: 'backend.tf', text: """
                     provider "aws" {
-                        region = "${TF_VAR_aws_region}"
-                        access_key = "${TF_VAR_access_key}"
-                        secret_key = "${TF_VAR_secret_key}"
+                        region = "${AWS_REGION}"
+                        access_key = "${ACCESS_KEY}"
+                        secret_key = "${SECRET_KEY}"
                     }
 
                     terraform {
@@ -41,13 +46,14 @@ pipeline {
                             }
                         }
                         backend "s3" {
-                            bucket         = "${TF_VAR_remote_state}"
-                            dynamodb_table = "${TF_VAR_remote_state}"
-                            region         = "${TF_VAR_aws_region}"
+                            bucket         = "${REMOTE_STATE}"
+                            dynamodb_table = "${REMOTE_STATE}"
+                            region         = "${AWS_REGION}"
                             key            = "${TF_VAR_project_name}"
                         }
                     }
                     """
+                    }
                     sh 'cat backend.tf'
                     sh 'terraform init'
                 }
