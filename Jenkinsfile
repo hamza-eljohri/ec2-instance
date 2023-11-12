@@ -7,8 +7,8 @@ pipeline {
         TF_VAR_secret_key = credentials('AWS_SECRET_ACCESS_KEY')
         TF_VAR_remote_state = credentials('remote_state')
         TF_VAR_aws_region = credentials('aws_region')
-        TF_VAR_branch_name = ${BRANCH_NAME}
-        TF_VAR_project_name = ${JOB_BASE_NAME}
+        TF_VAR_branch_name = "${BRANCH_NAME}"
+        TF_VAR_project_name = "${JOB_BASE_NAME}"
     }
 
     stages {
