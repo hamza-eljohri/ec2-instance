@@ -57,7 +57,6 @@ pipeline {
                     """
                     }
                     sh 'cat backend.tf'
-                    sh 'terraform init'
                 }
             }
         }
@@ -86,6 +85,15 @@ pipeline {
                 script {
                     
                     sh 'terraform apply -auto-approve tfplan'
+                }
+            }
+        }
+
+        stage('Clean Up Workspace') {
+            steps {
+                script {
+                    // Delete the entire workspace
+                    deleteDir()
                 }
             }
         }

@@ -1,2 +1,27 @@
-instance1-sg:
-  name : instance1-sg
+name: instance1-sg
+vpc_name : base-infra-vpc
+sg_inbound:
+
+    -
+      from_port: 80
+      to_port: 80
+      protocol: "HTTP"
+      cidr_blocks:
+        - 0.0.0.0/0
+      description: "Allow HTTP"
+    -
+      from_port: 443
+      to_port: 443
+      protocol: "HTTPS"
+      cidr_blocks:
+        - 0.0.0.0/0
+      description: "Allow HTTPS"
+ 
+sg_outbound:
+    -
+      from_port: 0
+      to_port: 0
+      protocol: "-1"
+      cidr_blocks: 
+        - 0.0.0.0/0
+      description: "Allow all the outbound traffic "
