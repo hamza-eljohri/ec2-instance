@@ -6,7 +6,7 @@ pipeline {
         TF_VAR_access_key = credentials('AWS_ACCESS_KEY_ID')
         TF_VAR_secret_key = credentials('AWS_SECRET_ACCESS_KEY')
         TF_VAR_remote_state = credentials('remote_state')
-        TF_VAR_aws_region = credentials('aws_region')
+        TF_VAR_AWS_REGION = credentials('aws_region')
         TF_VAR_branch_name = "${BRANCH_NAME}"
         TF_VAR_project_name = env.GIT_URL.replace('.git', '').split('/').last()                              
     }
@@ -28,6 +28,8 @@ pipeline {
                     writeFile file: 'backend.tf', text: """
                     provider "aws" {
                         region = "${TF_VAR_aws_region}"
+                        access_key = "${TF_VAR_access_key}"
+                        secret_key = "${TF_VAR_secret_key}"
                     }
 
                     terraform {
