@@ -49,6 +49,7 @@ pipeline {
                     }
                     """
                     sh 'cat backend.tf'
+                    sh 'terraform init'
                 }
             }
         }
