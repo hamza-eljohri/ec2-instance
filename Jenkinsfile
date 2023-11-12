@@ -25,11 +25,11 @@ pipeline {
             steps {
                 script {
                     
-                    sh '''
-                      cat > backend.tf <<EOF
+                    writeFile file: 'backend.tf', text: """
                     provider "aws" {
-                        region = "${aws_region}"
+                        region = "${TF_VAR_aws_region}"
                     }
+
                     terraform {
                         required_version = ">= 0.13.5"
                         required_providers {
@@ -39,13 +39,13 @@ pipeline {
                             }
                         }
                         backend "s3" {
-                            bucket         = "${remote_state}"
-                            dynamodb_table = "${remote_state}"
-                            region         = "${aws_region}"
+                            bucket         = "${TF_VAR_remote_state}"
+                            dynamodb_table = "${TF_VAR_remote_state}"
+                            region         = "${TF_VAR_aws_region}"
                             key            = "${TF_VAR_project_name}"
                         }
-                    }                    
-                    '''
+                    }
+                    """
                     sh 'cat backend.tf'
                 }
             }
